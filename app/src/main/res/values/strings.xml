@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">AppsSkeleton</string>
+
+    <!--LOADING-->
+    <string name="loading">Mohon Tunggu..</string>
+
+    <!--ERROR VIEW-->
+    <string name="no_connection">Tidak Ada Internet</string>
+    <string name="error_connection">Koneksi Internet Bermasalah</string>
+    <string name="error_connection2">Ooppss, Terjadi Kesalahan</string>
+    <string name="btn_no_connection">Coba Lagi</string>
+    <string name="no_gps">Mohon Aktifkan GPS Anda</string>
+    <string name="hint_login_username">Username</string>
+    <string name="hint_login_password">Password</string>
+    <string name="text_registrasi"><u>Registrasi</u></string>
+    <string name="text_footer"><![CDATA[Sales & Merchandise Monitor © 2018]]></string>
+    <string name="lupa_password"><u>Lupa password ?</u></string>
+    <string name="hint_new_password">Password baru</string>
+    <string name="hint_password_confirm">Konfirmasi password baru</string>
+    <string name="hint_km_awal">Kilometer awal</string>
+
+    <string name="forgot_title"><u>Forgot password ?</u></string>
+    <string name="not_have_account">Don\'t have an account ?</string>
+    <string name="signup_title"><u>Sign-Up</u></string>
+    <string name="default_progress">Calculating &#8230;</string>
+</resources>
