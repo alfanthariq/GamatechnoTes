@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools" package="com.alfanthariq.skeleton">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.alfanthariq.skeleton">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
             android:name=".ProjectApplication"
@@ -19,15 +20,50 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
+        <service
+                android:name=".features.socketioservice.SocketIOService"
+                android:enabled="true"
+                android:exported="false"
+                android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="com.alfanthariq.backpackerid.socketioservice.SocketIOService" />
+            </intent-filter>
+        </service>
+
+        <receiver
+                android:name=".features.socketioservice.BootReceiver"
+                android:enabled="true"
+                android:exported="true"
+                android:label="RestartServiceWhenStopped">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
 
         <activity
-            android:name=".features.main.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+                android:name=".features.main.chat.ChatActivity"
+                android:parentActivityName=".features.main.contact.ContactActivity"
+                android:theme="@style/AppTheme.NoActionBar"
+        />
+
+        <activity
+                android:name=".features.main.contact.ContactActivity"
+                android:parentActivityName=".features.main.MainActivity"
+                android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+                android:name=".features.login.LoginActivity"
+                android:launchMode="singleTop"
+                android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+                android:name=".features.main.MainActivity"
+                android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

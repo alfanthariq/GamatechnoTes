@@ -51,7 +51,7 @@ object ApiClient {
                 // Adding Authorization token (API Key)
                 // Requests will be denied without API key
                 if (apiToken != null) {
-                    requestBuilder.addHeader("Authorization", "Bearer $apiToken")
+                    requestBuilder.addHeader("token", apiToken)
                 }
 
                 val request = requestBuilder.build()

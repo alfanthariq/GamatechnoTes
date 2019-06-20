@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import id.zelory.compressor.Compressor
 import java.io.File
 import java.io.IOException
 import android.content.res.Resources
@@ -45,30 +44,6 @@ object FileUtil {
         } catch (e: Exception) {
             return contentUri.path
         }
-    }
-
-    fun compressFile(context: Context, imageFile: File): File? {
-        val folder = File(Environment.getExternalStorageDirectory().toString() + "/esign/Pictures/")
-        var success = true
-        if (!folder.exists()) {
-            success = folder.mkdirs()
-        }
-        if (success) {
-            var imageCompress: File? = null
-            try {
-                imageCompress = Compressor(context)
-                        .setQuality(20)
-                        .setDestinationDirectoryPath(folder.absolutePath)
-                        .compressToFile(imageFile)
-                galleryAddPic(context, imageCompress)
-                return imageCompress
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        } else {
-            Log.e("FileUtil", "Cannot Create Folder")
-        }
-        return null
     }
 
     fun getResizedBitmap(bm: Bitmap, newHeight: Int, newWidth: Int): Bitmap {

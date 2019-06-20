@@ -6,11 +6,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.alfanthariq.skeleton.data.local.sqlitehelper.AssetSQLiteOpenHelperFactory
-import com.alfanthariq.skeleton.data.model.LogKegiatan
+import com.alfanthariq.skeleton.data.model.*
 import java.io.File
 
-@Database(entities = [LogKegiatan::class], version = 1)
+@Database(entities = [LogKegiatan::class, Users::class, Messages::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
+
+    abstract fun UserDAO(): UsersDAO
+    abstract fun MessageDAO(): MessageDAO
 
     companion object {
         private val databaseName = "data.db"
@@ -32,7 +35,7 @@ abstract class AppDatabase : RoomDatabase() {
             val isset = setFolderDatabase()
             when (isset) {
                 true -> return Room.databaseBuilder(applicationContext, AppDatabase::class.java, databaseName)
-                        .openHelperFactory(AssetSQLiteOpenHelperFactory())
+                        //.openHelperFactory(AssetSQLiteOpenHelperFactory())
                         //.addMigrations(MIGRATION_1_2)
                         .build()
                 else -> return null

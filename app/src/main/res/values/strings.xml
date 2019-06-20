@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AppsSkeleton</string>
+    <string name="app_name">Gamatechno Chat</string>
 
     <!--LOADING-->
     <string name="loading">Mohon Tunggu..</string>
@@ -12,15 +12,27 @@
     <string name="no_gps">Mohon Aktifkan GPS Anda</string>
     <string name="hint_login_username">Username</string>
     <string name="hint_login_password">Password</string>
-    <string name="text_registrasi"><u>Registrasi</u></string>
+    <string name="text_registrasi">
+        <u>Registrasi</u>
+    </string>
     <string name="text_footer"><![CDATA[Sales & Merchandise Monitor © 2018]]></string>
-    <string name="lupa_password"><u>Lupa password ?</u></string>
+    <string name="lupa_password">
+        <u>Lupa password ?</u>
+    </string>
     <string name="hint_new_password">Password baru</string>
     <string name="hint_password_confirm">Konfirmasi password baru</string>
     <string name="hint_km_awal">Kilometer awal</string>
 
-    <string name="forgot_title"><u>Forgot password ?</u></string>
+    <string name="forgot_title">
+        <u>Forgot password ?</u>
+    </string>
     <string name="not_have_account">Don\'t have an account ?</string>
-    <string name="signup_title"><u>Sign-Up</u></string>
+    <string name="signup_title">
+        <u>Sign-Up</u>
+    </string>
     <string name="default_progress">Calculating &#8230;</string>
+    <string name="title_contact">Contact</string>
+
+    <string name="hint_chat_message">Ketik pesan kamu</string>
+    <string name="notif_new_message">Kamu mendapat pesan baru</string>
 </resources>

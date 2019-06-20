@@ -6,32 +6,26 @@ import android.content.Intent
 import com.alfanthariq.skeleton.features.main.MainActivity
 
 object AppRoute {
-    fun open(context : Context, page : String){
-        var intent = Intent()
-        when (page) {
-            "main" -> intent = Intent(context, MainActivity::class.java)
-        }
+    fun open(context : Context, cls : Class<*>){
+        val intent = Intent(context, cls)
+        context.startActivity(intent)
+    }
+
+    fun open(context : Context, cls : Class<*>, param : HashMap<String, String>){
+        val intent = Intent(context, cls)
+        intent.putExtra("parameter", param)
 
         context.startActivity(intent)
     }
 
-    fun openWithParam(context : Context, page : String, param : HashMap<String, String>){
-        var intent = Intent()
-        when (page) {
-            "main" -> intent = Intent(context, MainActivity::class.java)
-        }
-
-        param.forEach {
-            intent.putExtra(it.key, it.value)
-        }
-        context.startActivity(intent)
+    fun open(context : Context, activity : Activity, cls : Class<*>, requestCode : Int){
+        val intent = Intent(context, cls)
+        activity.startActivityForResult(intent, requestCode)
     }
 
-    fun openResult(activity : Activity, page : String, requestCode : Int){
-        var intent = Intent()
-        when (page) {
-            "main" -> intent = Intent(activity.baseContext, MainActivity::class.java)
-        }
+    fun open(context : Context, activity : Activity, cls : Class<*>, param : HashMap<String, String>, requestCode : Int){
+        val intent = Intent(context, cls)
+        intent.putExtra("parameter", param)
 
         activity.startActivityForResult(intent, requestCode)
     }

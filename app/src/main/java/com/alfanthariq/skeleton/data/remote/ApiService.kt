@@ -1,7 +1,5 @@
 package com.alfanthariq.skeleton.data.remote
 
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
@@ -22,9 +20,13 @@ interface ApiService {
                      @Field("level") level: Int,
                      @Field("nomor_surat") nomor_surat: String): Call<ResponseBody>
 
+    */
     @FormUrlEncoded
-    @POST("login/")
+    @POST("auth/login/")
     fun login(
-            @Field("username") username: String,
-            @Field("password") password: String): Call<ResponseBody>*/
+        @Field("username") username: String,
+        @Field("password") password: String): Call<ResponseBody>
+
+    @GET("api/list_user")
+    fun getUsers(@Query("page") page: Int): Call<ResponseBody>
 }
