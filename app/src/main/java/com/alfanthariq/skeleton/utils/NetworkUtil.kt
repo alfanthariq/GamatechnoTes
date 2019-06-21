@@ -16,7 +16,7 @@ object NetworkUtil {
     val local = "http://192.168.1.37:8080/"
     val office = "http://10.8.12.188:8080/"
     val trial = "http://167.99.66.123:2727/"
-    val socket = "https://socket-io-chat.now.sh" //"http://167.99.66.123:2727/"
+    val socket = "http://167.99.66.123:2727/" //"https://socket-io-chat.now.sh"
     var useAPI = trial
     val PROFILE_IMG_BASE_URL = "https://api.e-fikaliber42.id/cdn/abs/profile_img/"
 

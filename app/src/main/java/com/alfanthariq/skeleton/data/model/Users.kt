@@ -41,7 +41,7 @@ interface UsersDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertLists(lists: List<Users>)
 
-    @Query("SELECT * FROM users WHERE user_id IN (SELECT user_id FROM messages) ORDER BY user_name ASC")
+    @Query("SELECT * FROM users WHERE user_id IN (SELECT sender_id FROM messages) ORDER BY user_name ASC")
     fun all(): List<Users>
 
     @Query("SELECT * FROM users ORDER BY user_name ASC")
@@ -56,7 +56,7 @@ interface UsersDAO {
     @Query("DELETE FROM users")
     fun deleteAll()
 
-    @Query("SELECT * FROM users WHERE user_id IN (SELECT user_id FROM messages) AND (user_name LIKE :keyword) ORDER BY user_name ASC")
+    @Query("SELECT * FROM users WHERE user_id IN (SELECT sender_id FROM messages) AND (user_name LIKE :keyword) ORDER BY user_name ASC")
     fun search(keyword : String): List<Users>
 
     @Query("SELECT * FROM users WHERE (user_name LIKE :keyword) ORDER BY user_name ASC")

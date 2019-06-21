@@ -58,7 +58,7 @@
                 android:orientation="horizontal">
 
             <EditText
-                    android:id="@+id/input_pesan"
+                    android:id="@+id/edit_pesan"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
@@ -75,44 +75,18 @@
 
             <RelativeLayout
                     android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:layout_gravity="bottom">
+                    android:layout_height="45dp">
 
-                <com.joanzapata.iconify.widget.IconButton
+                <ImageButton
                         android:id="@+id/btn_send"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/button_circle"
-                        android:text="{fa-paper-plane}"
-                        android:textColor="@android:color/white"
-                        android:textSize="18sp"
+                        android:src="@mipmap/ic_paper_plane"
+                        app:backgroundTint="@color/colorPrimary"
+                        android:tint="@android:color/white"
                         android:layout_marginRight="3dp"
-                        style="?android:attr/borderlessButtonStyle" />
+                        android:background="@drawable/circle_blue"/>
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
-
-    <RelativeLayout
-            android:id="@+id/loading_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/white"
-            android:gravity="center"
-            android:visibility="gone"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <ImageView
-                android:id="@+id/img_loading"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_centerHorizontal="true"
-                android:src="@drawable/loading_circle"/>
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Loading ..."
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:layout_below="@+id/img_loading"/>
-    </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

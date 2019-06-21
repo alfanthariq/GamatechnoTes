@@ -1,5 +1,6 @@
 package com.alfanthariq.skeleton.features.main
 
+import alfanthariq.com.signatureapp.util.PreferencesHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import com.alfanthariq.skeleton.R
 import com.alfanthariq.skeleton.data.local.AppDatabase
 import com.alfanthariq.skeleton.data.model.Users
 import com.alfanthariq.skeleton.utils.GlideApp
+import com.livinglifetechway.k4kotlin.onClick
 import kotlinx.android.synthetic.main.item_user.view.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
@@ -37,9 +39,15 @@ class UserAdapter (private var detail: ArrayList<Users>,
     class MainHolder(private val view: View, private val db : AppDatabase) : RecyclerView.ViewHolder(view) {
         fun bind(data: Users, listener: (Users) -> Unit) {
             view.txt_username.text = data.user_name
+            view.container.onClick {
+                listener(data)
+            }
+
+            val pref_profile = PreferencesHelper.getProfilePref(view.context)
 
             doAsync {
-                val lastMsg = db.MessageDAO().lastByUser(data.user_id)
+                val lastMsg = db.MessageDAO().lastByUser(data.user_id,
+                    pref_profile.getInt("user_id", -1))
                 uiThread {
                     if (lastMsg != null) {
                         view.txt_last_msg.text = lastMsg.message

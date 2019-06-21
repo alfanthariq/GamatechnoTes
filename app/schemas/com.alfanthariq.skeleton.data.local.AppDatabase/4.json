@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 2,
-    "identityHash": "883b3d66386da43e9230f7e782d175f0",
+    "version": 4,
+    "identityHash": "72859853f4843a1df1f4d3b2e7ce7a7d",
     "entities": [
       {
         "tableName": "log",
@@ -136,7 +136,7 @@
       },
       {
         "tableName": "messages",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `user_id` INTEGER NOT NULL, `sender_id` INTEGER NOT NULL, `message` TEXT NOT NULL, `message_time` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `user_id` INTEGER NOT NULL, `sender_id` INTEGER NOT NULL, `conversation_id` TEXT NOT NULL, `message` TEXT NOT NULL, `message_time` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -154,6 +154,12 @@
             "fieldPath": "sender_id",
             "columnName": "sender_id",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "conversation_id",
+            "columnName": "conversation_id",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -181,7 +187,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"883b3d66386da43e9230f7e782d175f0\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"72859853f4843a1df1f4d3b2e7ce7a7d\")"
     ]
   }
 }

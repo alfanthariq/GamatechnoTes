@@ -13,7 +13,9 @@ object AppRoute {
 
     fun open(context : Context, cls : Class<*>, param : HashMap<String, String>){
         val intent = Intent(context, cls)
-        intent.putExtra("parameter", param)
+        param.keys.forEach {
+            intent.putExtra(it, param[it])
+        }
 
         context.startActivity(intent)
     }
@@ -25,7 +27,9 @@ object AppRoute {
 
     fun open(context : Context, activity : Activity, cls : Class<*>, param : HashMap<String, String>, requestCode : Int){
         val intent = Intent(context, cls)
-        intent.putExtra("parameter", param)
+        param.keys.forEach {
+            intent.putExtra(it, param[it])
+        }
 
         activity.startActivityForResult(intent, requestCode)
     }
