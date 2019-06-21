@@ -37,13 +37,11 @@ object NotificationUtils {
             return
 
         // notification icon
-        /*val icon = if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            R.mipmap.ic_notif
+        val icon = if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            R.mipmap.ic_launcher
         } else {
-            R.mipmap.ic_notif
-        }*/
-
-        val icon = 0
+            R.mipmap.ic_launcher
+        }
 
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         val resultPendingIntent = PendingIntent.getActivity(

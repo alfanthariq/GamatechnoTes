@@ -16,9 +16,12 @@ import com.alfanthariq.skeleton.features.base.BaseActivity
 import com.alfanthariq.skeleton.features.common.ErrorView
 import com.alfanthariq.skeleton.features.main.chat.ChatActivity
 import com.alfanthariq.skeleton.features.main.contact.ContactActivity
+import com.alfanthariq.skeleton.features.socketioservice.AppSocketListener
 import com.alfanthariq.skeleton.features.socketioservice.SocketEventConstants
+import com.alfanthariq.skeleton.features.socketioservice.SocketListener
 import com.alfanthariq.skeleton.utils.*
 import com.livinglifetechway.k4kotlin.onClick
+import com.livinglifetechway.k4kotlin.toast
 import io.socket.client.IO
 import io.socket.client.Manager
 import io.socket.client.Socket
@@ -81,6 +84,16 @@ class MainActivity : BaseActivity<MainContract.View,
     fun init(){
         setupRecycler()
 
+        if (NetworkUtil.isNetworkConnected(this)) {
+            showLoadingDialog("Loading ...")
+            mPresenter.getData(lastPage){ list, status, message, next ->
+                hideLoadingDialog()
+                if (!status) {
+                    toast(message)
+                }
+            }
+        }
+
         mPresenter.refreshData()
 
         fab_contact.onClick {
@@ -91,6 +104,20 @@ class MainActivity : BaseActivity<MainContract.View,
         swipe.setOnRefreshListener {
             mPresenter.refreshData()
         }
+
+        AppSocketListener.getInstance().setActiveSocketListener(object : SocketListener {
+            override fun onSocketConnected() {
+
+            }
+
+            override fun onSocketDisconnected() {
+
+            }
+
+            override fun onNewMessageReceived(jsonData: String) {
+                mPresenter.refreshData()
+            }
+        })
     }
 
     override fun onResume() {

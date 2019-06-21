@@ -26,6 +26,66 @@ class MainPresenter (var view: MainContract.View) :
     private var apiService: ApiService? = null
     private val db = AppDatabase.getInstance(context)!!
 
+    override fun getData(page: Int, callback: (List<Users>?, Boolean, String, Boolean) -> Unit) {
+        apiService = ApiClient.getClient(context,pref_profile.getString("token", ""), NetworkUtil.useAPI)
+            .create(ApiService::class.java)
+        val sendApi = apiService?.getUsers(page)
+        sendApi?.enqueue(object : Callback<ResponseBody> {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                callback(null, false, "Request Failed", false)
+            }
+
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val resp = response.body()!!.string()
+                    val json: JsonObject = JsonParser().parse(resp).asJsonObject
+                    val obj = json.get("gtfwResult").asJsonObject
+                    val status = obj.get("status").asInt
+                    println("Status $status")
+
+                    if (status == 200) {
+                        try {
+                            val data: JsonObject = obj.get("data").asJsonObject
+                            val next = !data.get("next_page").isJsonNull
+                            doAsync {
+                                val users = data.get("list_user").asJsonArray
+                                val userList = ArrayList<Users>()
+                                users.forEach {
+                                    val user = it.asJsonObject
+                                    val userDB = Users()
+                                    userDB.user_id = user.get("user_id").asInt
+                                    userDB.user_key = user.get("user_key").asString
+                                    userDB.user_name = user.get("user_name").asString
+                                    userDB.user_username = user.get("user_username").asString
+                                    userDB.user_email = user.get("user_email").asString
+                                    userDB.user_photo = user.get("user_photo").asString
+                                    userDB.user_location = if (user.get("user_location").isJsonNull) ""
+                                    else user.get("user_location").asString
+                                    userDB.user_flag = user.get("user_flag").asString
+                                    userDB.user_distance = user.get("user_distance").asString
+                                    userDB.user_online = user.get("user_online").asInt
+                                    userList.add(userDB)
+                                }
+
+                                db.UserDAO().insertLists(userList)
+
+                                uiThread {
+                                    callback(userList, true, "", next)
+                                }
+                            }
+                        } catch (e : JsonIOException) {
+
+                        }
+                    } else {
+                        callback(null, false, obj.get("message").asString, false)
+                    }
+                } else {
+                    callback(null, false, "Internal Server Error", false)
+                }
+            }
+        })
+    }
+
     override fun refreshData() {
         doAsync {
             val data = db.conversationDAO().all()

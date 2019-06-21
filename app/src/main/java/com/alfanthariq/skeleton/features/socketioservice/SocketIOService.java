@@ -202,8 +202,9 @@ public class SocketIOService extends Service {
             public void call(Object... args) {
                 System.out.println("Received message : "+args[0].toString());
                 // Parse json
-//                Intent intent = new Intent(SocketEventConstants.getMessage);
-//                broadcastEvent(intent);
+                Intent intent = new Intent(SocketEventConstants.getMessage);
+                intent.putExtra("jsonData", args[0].toString());
+                broadcastEvent(intent);
                 //
             }
         });

@@ -1,12 +1,24 @@
 package com.alfanthariq.skeleton.features.socketioservice;
 
+import alfanthariq.com.signatureapp.util.PreferencesHelper;
+import android.app.PendingIntent;
 import android.content.*;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import com.alfanthariq.skeleton.data.local.AppDatabase;
+import com.alfanthariq.skeleton.data.model.Conversation;
+import com.alfanthariq.skeleton.data.model.Messages;
+import com.alfanthariq.skeleton.features.main.MainActivity;
+import com.alfanthariq.skeleton.utils.NotificationUtils;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.socket.client.Ack;
 import io.socket.emitter.Emitter;
+
+import java.util.List;
 
 /**
  * Created by alfanthariq on 28/05/2018.
@@ -110,7 +122,47 @@ public class AppSocketListener implements SocketListener {
         public void onReceive(Context context, Intent intent) {
             String jsonData = intent.getStringExtra("jsonData");
             onNewMessageReceived(jsonData);
-            Log.d("AppSocketListener", "Broadcast New Message");
+            JsonObject json = new JsonParser().parse(jsonData).getAsJsonObject();
+            JsonObject obj = json.get("gtfwResult").getAsJsonObject();
+            JsonObject data = obj.get("data").getAsJsonObject();
+            int from = data.get("from_user_id").getAsInt();
+            SharedPreferences pref = PreferencesHelper.INSTANCE.getProfilePref(context);
+            int to = pref.getInt("user_id", -1);
+            String message = data.get("from_message").getAsString();
+            String time = data.get("timestamp").getAsString();
+
+            Intent pInt = new Intent(context, MainActivity.class);
+            NotificationUtils.INSTANCE.showNotificationMessage(context, "New Message", message, "", pInt, true);
+
+            final AppDatabase db = AppDatabase.Companion.getInstance(context);
+            Messages msg = new Messages();
+            msg.setMessage(message);
+            msg.setSender_id(from);
+            msg.setUser_id(to);
+            msg.setMessage_time(time);
+
+            new AsyncTask<Messages, Integer, Integer>() {
+                @Override
+                protected Integer doInBackground(Messages... message) {
+                    List<Conversation> conv = db.conversationDAO().bySender(message[0].getSender_id());
+                    if (conv.size() > 0) {
+                        int convId = conv.get(0).getId();
+                        message[0].setConversation_id(convId);
+                        db.MessageDAO().insert(message[0]);
+                    } else {
+                        Conversation c = new Conversation();
+                        c.setSender_id(message[0].getSender_id());
+                        c.setUser_id(message[0].getUser_id());
+
+                        Long co = db.conversationDAO().insert(c);
+                        int convId = co.intValue();
+                        message[0].setConversation_id(convId);
+                        db.MessageDAO().insert(message[0]);
+                    }
+                    return 0;
+                }
+            }.execute(msg);
+            Log.d("AppSocketListener", "Broadcast New Message "+jsonData);
         }
     };
 
@@ -168,7 +220,7 @@ public class AppSocketListener implements SocketListener {
 //        socketServiceInterface.leaveRoom();
 //    }
 
-    void connect(){
+    public void connect(){
         socketServiceInterface.connect();
     }
 

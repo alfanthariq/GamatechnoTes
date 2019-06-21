@@ -11,6 +11,7 @@ object MainContract {
     }
 
     interface Presenter : BasePresenter<View>{
+        fun getData(page : Int, callback : (List<Users>?, Boolean, String, Boolean) -> Unit)
         fun refreshData()
     }
 }
