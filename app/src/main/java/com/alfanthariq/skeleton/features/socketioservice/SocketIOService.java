@@ -201,7 +201,10 @@ public class SocketIOService extends Service {
             @Override
             public void call(Object... args) {
                 System.out.println("Received message : "+args[0].toString());
-                Toast.makeText(SocketIOService.this, args[0].toString(), Toast.LENGTH_SHORT).show();
+                // Parse json
+//                Intent intent = new Intent(SocketEventConstants.getMessage);
+//                broadcastEvent(intent);
+                //
             }
         });
     }

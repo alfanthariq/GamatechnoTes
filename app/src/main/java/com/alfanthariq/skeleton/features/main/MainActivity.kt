@@ -10,12 +10,12 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alfanthariq.skeleton.R
+import com.alfanthariq.skeleton.data.model.Conversation
 import com.alfanthariq.skeleton.data.model.Users
 import com.alfanthariq.skeleton.features.base.BaseActivity
 import com.alfanthariq.skeleton.features.common.ErrorView
 import com.alfanthariq.skeleton.features.main.chat.ChatActivity
 import com.alfanthariq.skeleton.features.main.contact.ContactActivity
-import com.alfanthariq.skeleton.features.socketioservice.AppSocketListener
 import com.alfanthariq.skeleton.features.socketioservice.SocketEventConstants
 import com.alfanthariq.skeleton.utils.*
 import com.livinglifetechway.k4kotlin.onClick
@@ -33,8 +33,8 @@ class MainActivity : BaseActivity<MainContract.View,
         MainPresenter>(),
     MainContract.View, ErrorView.ErrorListener {
 
-    private var userAdapter : UserAdapter? = null
-    private var details = ArrayList<Users>()
+    private var conversationAdapter : ConversationAdapter? = null
+    private var details = ArrayList<Conversation>()
     private var lastPage = 1
     private lateinit var mSocket: Socket
 
@@ -62,11 +62,12 @@ class MainActivity : BaseActivity<MainContract.View,
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
 
-    override fun onRefreshData(list: List<Users>) {
+    override fun onRefreshData(list: List<Conversation>) {
+        swipe.isRefreshing = false
         hideLoadingDialog()
         details.clear()
         details.addAll(list)
-        userAdapter?.notifyDataSetChanged()
+        conversationAdapter?.notifyDataSetChanged()
 
         if (details.size > 0) {
             lyt_empty.gone()
@@ -80,21 +81,6 @@ class MainActivity : BaseActivity<MainContract.View,
     fun init(){
         setupRecycler()
 
-//        if (NetworkUtil.isNetworkConnected(this)) {
-//            showLoadingDialog("Loading data ...")
-//            mPresenter.getData(lastPage){ list, status, message ->
-//                hideLoadingDialog()
-//                if (status) {
-//                    details.addAll(list!!)
-//                    userAdapter?.notifyDataSetChanged()
-//                } else {
-//                    toast(message)
-//                }
-//            }
-//        } else {
-//            mPresenter.refreshData()
-//        }
-
         mPresenter.refreshData()
 
         fab_contact.onClick {
@@ -102,45 +88,28 @@ class MainActivity : BaseActivity<MainContract.View,
             //attemptSend()
         }
 
-        val tw_cari = TextWatcherHelper()
-        val tw_cari_listener : TextWatcherHelper.TextWatcherListener = object : TextWatcherHelper.TextWatcherListener {
-            override fun onAfterChange(editable: Editable) {
-                val txt = editable.toString()
-                mPresenter.search("%$txt%")
-            }
+        swipe.setOnRefreshListener {
+            mPresenter.refreshData()
         }
-        tw_cari.setListener(tw_cari_listener)
-        edit_search.addTextChangedListener(tw_cari)
     }
 
-    private fun attemptSend() {
-        val message = "{" +
-                "                \"gtfwRequest\": {\n" +
-                "                    \"data\": {\n" +
-                "                        \"user_id\": 2,\n" +
-                "                        \"message\": \"tes\"\n" +
-                "                    }\n" +
-                "} }\n"
-        try {
-            System.out.println("Emit : $message")
-            mSocket.emit(SocketEventConstants.newMessage, message)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
+    override fun onResume() {
+        super.onResume()
+        mPresenter.refreshData()
     }
 
     fun setupRecycler(){
-        userAdapter = UserAdapter(details){
+        conversationAdapter = ConversationAdapter(details){
             val param = HashMap<String, String>()
-            param["sender_id"] = it.user_id.toString()
-            param["sender_name"] = it.user_name
+            param["sender_id"] = it.sender_id.toString()
+            param["conversation_id"] = it.id.toString()
             AppRoute.open(this, ChatActivity::class.java, param)
         }
 
         recycler.apply {
             val linLayout = LinearLayoutManager(this@MainActivity,  RecyclerView.VERTICAL, false)
             layoutManager = linLayout
-            adapter = userAdapter
+            adapter = conversationAdapter
         }
     }
 

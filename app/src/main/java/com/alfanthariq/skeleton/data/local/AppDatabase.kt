@@ -9,11 +9,12 @@ import com.alfanthariq.skeleton.data.local.sqlitehelper.AssetSQLiteOpenHelperFac
 import com.alfanthariq.skeleton.data.model.*
 import java.io.File
 
-@Database(entities = [LogKegiatan::class, Users::class, Messages::class], version = 4)
+@Database(entities = [LogKegiatan::class, Users::class, Messages::class, Conversation::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun UserDAO(): UsersDAO
     abstract fun MessageDAO(): MessageDAO
+    abstract fun conversationDAO(): ConversationDAO
 
     companion object {
         private val databaseName = "data.db"

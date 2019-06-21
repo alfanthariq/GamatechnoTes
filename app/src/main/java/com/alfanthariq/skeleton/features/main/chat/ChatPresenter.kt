@@ -15,11 +15,22 @@ class ChatPresenter (var view: ChatContract.View) :
     private val pref_profile = PreferencesHelper.getProfilePref(context)
     private val db = AppDatabase.getInstance(context)!!
 
-    override fun sendMessage(message: String, sender : Int, callback: (Boolean) -> Unit) {
+    override fun getSenderName(senderId : Int, callback: (String) -> Unit) {
+        doAsync {
+            val user = db.UserDAO().one(senderId)
+
+            uiThread {
+                callback(user.user_name)
+            }
+        }
+    }
+
+    override fun sendMessage(message: String, sender : Int, conversation_id: Int, callback: (Boolean) -> Unit) {
         doAsync {
             val msg = Messages()
             msg.message = message
             msg.sender_id = sender
+            msg.conversation_id = conversation_id
             msg.user_id = pref_profile.getInt("user_id", -1)
             msg.message_time = DateOperationUtil.getCurrentTimeStr("yyyy-MM-dd HH:mm:ss")
 
@@ -31,13 +42,14 @@ class ChatPresenter (var view: ChatContract.View) :
         }
     }
 
-    override fun insertNewMessage(message: String, sender: Int) {
+    override fun insertNewMessage(message: String, time : String, sender: Int, conversation_id: Int) {
         doAsync {
             val msg = Messages()
             msg.message = message
             msg.sender_id = sender
+            msg.conversation_id = conversation_id
             msg.user_id = pref_profile.getInt("user_id", -1)
-            msg.message_time = DateOperationUtil.getCurrentTimeStr("yyyy-MM-dd HH:mm:ss")
+            msg.message_time = time
 
             db.MessageDAO().insert(msg)
 
@@ -45,9 +57,9 @@ class ChatPresenter (var view: ChatContract.View) :
         }
     }
 
-    override fun loadMessage(sender_id: Int) {
+    override fun loadMessage(conversation_id: Int) {
         doAsync {
-            val data = db.MessageDAO().ByUser(sender_id, pref_profile.getInt("user_id", -1))
+            val data = db.MessageDAO().ByConversation(conversation_id)
 
             uiThread {
                 view.onLoadMessage(data)

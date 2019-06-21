@@ -48,7 +48,7 @@ interface UsersDAO {
     fun allUserOnly(): List<Users>
 
     @Query("SELECT * FROM users WHERE user_id = :id ORDER BY user_name ASC")
-    fun one(id : Int): List<Users>
+    fun one(id : Int): Users
 
     @Query("UPDATE users SET last_message_date = :lmd WHERE user_id = :id")
     fun updateLastMsgDate(lmd : String, id : Int)

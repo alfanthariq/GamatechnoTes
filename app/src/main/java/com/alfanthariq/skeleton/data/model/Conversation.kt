@@ -20,7 +20,7 @@ data class Conversation(
 @Dao
 interface ConversationDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(data: Conversation)
+    fun insert(data: Conversation) : Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertLists(lists: List<Conversation>)
@@ -30,6 +30,9 @@ interface ConversationDAO {
 
     @Query("SELECT * FROM conversation WHERE id = :id")
     fun one(id : Int): List<Conversation>
+
+    @Query("SELECT * FROM conversation WHERE sender_id = :id")
+    fun bySender(id : Int): List<Conversation>
 
     @Query("DELETE FROM conversation")
     fun deleteAll()

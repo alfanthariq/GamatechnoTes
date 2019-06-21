@@ -10,9 +10,9 @@ object ContactContract {
     }
 
     interface Presenter : BasePresenter<View> {
-        fun getData(page : Int, callback : (List<Users>?, Boolean, String) -> Unit)
+        fun getData(page : Int, callback : (List<Users>?, Boolean, String, Boolean) -> Unit)
         fun refreshData()
         fun search(keyword : String)
-        fun addConversation()
+        fun addConversation(senderId : Int, callback : (Boolean, Int) -> Unit)
     }
 }

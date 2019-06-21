@@ -10,8 +10,9 @@ object ChatContract {
     }
 
     interface Presenter : BasePresenter<View> {
-        fun sendMessage(message : String, sender : Int, callback : (Boolean) -> Unit)
-        fun loadMessage(sender_id : Int)
-        fun insertNewMessage(message : String, sender : Int)
+        fun sendMessage(message : String, sender : Int, conversation_id: Int, callback : (Boolean) -> Unit)
+        fun loadMessage(conversation_id : Int)
+        fun insertNewMessage(message : String, time : String, sender : Int, conversation_id: Int)
+        fun getSenderName(senderId : Int, callback: (String) -> Unit)
     }
 }

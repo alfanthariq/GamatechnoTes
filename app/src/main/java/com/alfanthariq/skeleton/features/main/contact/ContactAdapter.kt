@@ -10,26 +10,57 @@ import com.alfanthariq.skeleton.data.model.Users
 import com.alfanthariq.skeleton.utils.GlideApp
 import com.livinglifetechway.k4kotlin.onClick
 import kotlinx.android.synthetic.main.item_contact.view.*
+import kotlinx.android.synthetic.main.item_loading.view.*
 
-class ContactAdapter (private var detail: ArrayList<Users>,
+class ContactAdapter (private var detail: ArrayList<Users?>,
                       private val clickListener: (Users) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     lateinit var db : AppDatabase
+    private val VIEW_TYPE_LOADING = 1
+    private val VIEW_TYPE_ITEM = 0
+
+    fun addLoading() {
+        detail.add(null)
+        notifyItemInserted(detail.size - 1)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val vh : RecyclerView.ViewHolder
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_contact, parent, false)
-        db = AppDatabase.getInstance(v.context)!!
-        vh = MainHolder(v, db)
-        return vh
+        return if (viewType == VIEW_TYPE_ITEM) {
+            val vh : RecyclerView.ViewHolder
+            val v = LayoutInflater.from(parent.context).inflate(R.layout.item_contact, parent, false)
+            db = AppDatabase.getInstance(v.context)!!
+            vh = MainHolder(v, db)
+
+            vh
+        } else {
+            LoadingHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_loading, parent, false))
+        }
     }
 
     override fun getItemCount(): Int = detail.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is MainHolder){
-            holder.bind(detail[position], clickListener)
+            holder.bind(detail[position]!!, clickListener)
+        } else if (holder is LoadingHolder){
+            holder.showLoading()
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        var viewType = 0
+        if (detail[position] == null) {
+            viewType = VIEW_TYPE_LOADING
+        } else {
+            viewType = VIEW_TYPE_ITEM
+        }
+        return viewType
+    }
+
+    class LoadingHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+        fun showLoading(){
+            view.progressBar.visibility = View.VISIBLE
         }
     }
 

@@ -2,6 +2,7 @@ package com.alfanthariq.skeleton.features.main.contact
 
 import alfanthariq.com.signatureapp.util.PreferencesHelper
 import com.alfanthariq.skeleton.data.local.AppDatabase
+import com.alfanthariq.skeleton.data.model.Conversation
 import com.alfanthariq.skeleton.data.model.Users
 import com.alfanthariq.skeleton.data.remote.ApiClient
 import com.alfanthariq.skeleton.data.remote.ApiService
@@ -26,13 +27,13 @@ class ContactPresenter (var view: ContactContract.View) :
     private var apiService: ApiService? = null
     private val db = AppDatabase.getInstance(context)!!
 
-    override fun getData(page: Int, callback: (List<Users>?, Boolean, String) -> Unit) {
+    override fun getData(page: Int, callback: (List<Users>?, Boolean, String, Boolean) -> Unit) {
         apiService = ApiClient.getClient(context,pref_profile.getString("token", ""), NetworkUtil.useAPI)
             .create(ApiService::class.java)
         val sendApi = apiService?.getUsers(page)
         sendApi?.enqueue(object : Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                callback(null, false, "Request Failed")
+                callback(null, false, "Request Failed", false)
             }
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
@@ -46,6 +47,7 @@ class ContactPresenter (var view: ContactContract.View) :
                     if (status == 200) {
                         try {
                             val data: JsonObject = obj.get("data").asJsonObject
+                            val next = !data.get("next_page").isJsonNull
                             doAsync {
                                 val users = data.get("list_user").asJsonArray
                                 val userList = ArrayList<Users>()
@@ -69,17 +71,17 @@ class ContactPresenter (var view: ContactContract.View) :
                                 db.UserDAO().insertLists(userList)
 
                                 uiThread {
-                                    callback(userList, true, "")
+                                    callback(userList, true, "", next)
                                 }
                             }
                         } catch (e : JsonIOException) {
 
                         }
                     } else {
-                        callback(null, false, obj.get("message").asString)
+                        callback(null, false, obj.get("message").asString, false)
                     }
                 } else {
-                    callback(null, false, "Internal Server Error")
+                    callback(null, false, "Internal Server Error", false)
                 }
             }
         })
@@ -101,6 +103,24 @@ class ContactPresenter (var view: ContactContract.View) :
 
             uiThread {
                 view.onRefreshData(data)
+            }
+        }
+    }
+
+    override fun addConversation(senderId: Int, callback: (Boolean, Int) -> Unit) {
+        doAsync {
+            val cek = db.conversationDAO().bySender(senderId)
+
+            if (cek.isEmpty()) {
+                val conv = Conversation()
+                conv.sender_id = senderId
+                conv.user_id = pref_profile.getInt("user_id", -1)
+                val id = db.conversationDAO().insert(conv)
+                uiThread {
+                    callback(true, id.toInt())
+                }
+            } else {
+                callback(true, cek[0].id)
             }
         }
     }

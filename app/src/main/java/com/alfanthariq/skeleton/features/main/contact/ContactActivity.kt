@@ -12,6 +12,7 @@ import com.alfanthariq.skeleton.features.main.chat.ChatActivity
 import com.alfanthariq.skeleton.utils.*
 import com.livinglifetechway.k4kotlin.toast
 import kotlinx.android.synthetic.main.activity_contact.*
+import org.jetbrains.anko.collections.forEachReversedWithIndex
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 class ContactActivity : BaseActivity<ContactContract.View,
@@ -19,8 +20,10 @@ class ContactActivity : BaseActivity<ContactContract.View,
     ContactContract.View {
 
     private var contactAdapter : ContactAdapter? = null
-    private var details = ArrayList<Users>()
+    private var details = ArrayList<Users?>()
     private var lastPage = 1
+    private var scrollListener : EndlessRecyclerViewScrollListener? = null
+    private var isLoadMore = false
 
     override var mPresenter: ContactPresenter
         get() = ContactPresenter(this)
@@ -30,9 +33,21 @@ class ContactActivity : BaseActivity<ContactContract.View,
 
     override fun getTagClass(): String = javaClass.simpleName
 
+    fun removeLoading() {
+        details.forEachReversedWithIndex { i, users ->
+            if (users == null) {
+                details.remove(users)
+                return
+            }
+        }
+    }
+
     override fun onRefreshData(list: List<Users>) {
         hideLoadingDialog()
-        details.clear()
+        removeLoading()
+        if (!isLoadMore) {
+            details.clear()
+        }
         details.addAll(list)
         contactAdapter?.notifyDataSetChanged()
 
@@ -43,6 +58,8 @@ class ContactActivity : BaseActivity<ContactContract.View,
             lyt_empty.visible()
             recycler.gone()
         }
+
+        isLoadMore = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,9 +80,12 @@ class ContactActivity : BaseActivity<ContactContract.View,
 
         if (NetworkUtil.isNetworkConnected(this)) {
             showLoadingDialog("Loading data ...")
-            mPresenter.getData(lastPage){ list, status, message ->
+            mPresenter.getData(lastPage){ list, status, message, next ->
                 hideLoadingDialog()
                 if (status) {
+                    if (next) {
+                        lastPage += 1
+                    }
                     details.addAll(list!!)
                     contactAdapter?.notifyDataSetChanged()
                 } else {
@@ -89,16 +109,43 @@ class ContactActivity : BaseActivity<ContactContract.View,
 
     fun setupRecycler(){
         contactAdapter = ContactAdapter(details){
-            val param = HashMap<String, String>()
-            param["sender_id"] = it.user_id.toString()
-            param["sender_name"] = it.user_name
-            AppRoute.open(this, ChatActivity::class.java, param)
+            val sender_id = it.user_id.toString()
+            mPresenter.addConversation(it.user_id){status, id ->
+                if (status) {
+                    val param = HashMap<String, String>()
+                    param["sender_id"] = sender_id
+                    param["conversation_id"] = id.toString()
+                    AppRoute.open(this, ChatActivity::class.java, param)
+                }
+            }
         }
 
+        val linLayout = LinearLayoutManager(this@ContactActivity,  RecyclerView.VERTICAL, false)
         recycler.apply {
-            val linLayout = LinearLayoutManager(this@ContactActivity,  RecyclerView.VERTICAL, false)
             layoutManager = linLayout
             adapter = contactAdapter
         }
+
+        scrollListener = object : EndlessRecyclerViewScrollListener(linLayout) {
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
+                if (!isLoadMore) {
+                    isLoadMore = true
+                    contactAdapter?.addLoading()
+                    mPresenter.getData(lastPage){ list, status, message, next ->
+                        hideLoadingDialog()
+                        if (next) {
+                            lastPage += 1
+                        }
+                        if (status) {
+                            details.addAll(list!!)
+                            contactAdapter?.notifyDataSetChanged()
+                        } else {
+                            toast(message)
+                        }
+                    }
+                }
+            }
+        }
+        recycler.addOnScrollListener(scrollListener!!)
     }
 }

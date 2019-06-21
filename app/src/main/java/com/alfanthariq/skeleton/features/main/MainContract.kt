@@ -1,17 +1,16 @@
 package com.alfanthariq.skeleton.features.main
 
+import com.alfanthariq.skeleton.data.model.Conversation
 import com.alfanthariq.skeleton.data.model.Users
 import com.alfanthariq.skeleton.features.base.BaseMvpView
 import com.alfanthariq.skeleton.features.base.BasePresenter
 
 object MainContract {
     interface View : BaseMvpView {
-        fun onRefreshData(list : List<Users>)
+        fun onRefreshData(list : List<Conversation>)
     }
 
     interface Presenter : BasePresenter<View>{
-        fun getData(page : Int, callback : (List<Users>?, Boolean, String) -> Unit)
         fun refreshData()
-        fun search(keyword : String)
     }
 }

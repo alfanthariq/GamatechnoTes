@@ -1,21 +1,20 @@
 package com.alfanthariq.skeleton.features.main
 
-import alfanthariq.com.signatureapp.util.PreferencesHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.alfanthariq.skeleton.R
 import com.alfanthariq.skeleton.data.local.AppDatabase
-import com.alfanthariq.skeleton.data.model.Users
+import com.alfanthariq.skeleton.data.model.Conversation
 import com.alfanthariq.skeleton.utils.GlideApp
 import com.livinglifetechway.k4kotlin.onClick
 import kotlinx.android.synthetic.main.item_user.view.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
-class UserAdapter (private var detail: ArrayList<Users>,
-                   private val clickListener: (Users) -> Unit
+class ConversationAdapter (private var detail: ArrayList<Conversation>,
+                           private val clickListener: (Conversation) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     lateinit var db : AppDatabase
@@ -37,17 +36,15 @@ class UserAdapter (private var detail: ArrayList<Users>,
     }
 
     class MainHolder(private val view: View, private val db : AppDatabase) : RecyclerView.ViewHolder(view) {
-        fun bind(data: Users, listener: (Users) -> Unit) {
-            view.txt_username.text = data.user_name
-            view.container.onClick {
-                listener(data)
-            }
-
-            val pref_profile = PreferencesHelper.getProfilePref(view.context)
-
+        fun bind(data: Conversation, listener: (Conversation) -> Unit) {
             doAsync {
-                val lastMsg = db.MessageDAO().lastByUser(data.user_id,
-                    pref_profile.getInt("user_id", -1))
+                val user = db.UserDAO().one(data.sender_id)
+                view.txt_username.text = user.user_name
+                view.container.onClick {
+                    listener(data)
+                }
+
+                val lastMsg = db.MessageDAO().lastByConversation(data.id)
                 uiThread {
                     if (lastMsg != null) {
                         view.txt_last_msg.text = lastMsg.message
@@ -56,7 +53,7 @@ class UserAdapter (private var detail: ArrayList<Users>,
                     }
 
                     GlideApp.with(view.context)
-                        .load(data.user_photo)
+                        .load(user.user_photo)
                         .error(R.mipmap.ic_user)
                         .into(view.img_profpic)
                 }

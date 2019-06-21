@@ -12,7 +12,7 @@ data class Messages(
     @ColumnInfo(name = "sender_id")
     var sender_id: Int = 0,
     @ColumnInfo(name = "conversation_id")
-    var conversation_id: String = "",
+    var conversation_id: Int = 0,
     @ColumnInfo(name = "message")
     var message: String = "",
     @ColumnInfo(name = "message_time")
@@ -40,8 +40,14 @@ interface MessageDAO {
     @Query("SELECT * FROM messages WHERE (sender_id = :user_id OR sender_id = :sender_id) ORDER BY message_time DESC")
     fun lastByUser(sender_id : Int, user_id : Int): Messages?
 
+    @Query("SELECT * FROM messages WHERE conversation_id = :c_id ORDER BY message_time DESC")
+    fun lastByConversation(c_id : Int): Messages?
+
     @Query("SELECT * FROM messages WHERE (sender_id = :user_id AND sender_id = :sender_id) OR (sender_id = :sender_id AND user_id = :sender_id) ORDER BY message_time DESC")
     fun ByUser(sender_id : Int, user_id : Int): List<Messages>
+
+    @Query("SELECT * FROM messages WHERE conversation_id = :id ORDER BY message_time DESC")
+    fun ByConversation(id : Int): List<Messages>
 
     @Query("DELETE FROM messages")
     fun deleteAll()

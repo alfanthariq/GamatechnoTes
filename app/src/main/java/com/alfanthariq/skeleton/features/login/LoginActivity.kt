@@ -49,8 +49,6 @@ class LoginActivity : BaseActivity<LoginContract.View,
             }
         })
 
-        methodWithPermissions()
-
         println("Login : "+pref_setting!!.getBoolean("is_login", false))
         if (pref_setting!!.getBoolean("is_login", false)) {
             AppRoute.open(this, MainActivity::class.java)
