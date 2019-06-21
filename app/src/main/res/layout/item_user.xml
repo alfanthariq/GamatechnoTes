@@ -5,7 +5,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/spacing_middle"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:id="@+id/container">
 
     <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/img_profpic"
@@ -38,5 +39,10 @@
                 android:ellipsize="end"
                 android:textSize="12sp"
                 android:text="Last message"/>
+
+        <View android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:background="@color/grey_300"
+              android:layout_marginTop="@dimen/spacing_middle"/>
     </LinearLayout>
 </LinearLayout>

@@ -7,6 +7,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.*;
 import android.util.Log;
+import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.alfanthariq.skeleton.R;
@@ -14,8 +15,11 @@ import com.alfanthariq.skeleton.features.main.MainActivity;
 import com.alfanthariq.skeleton.utils.NetworkUtil;
 import io.socket.client.Ack;
 import io.socket.client.IO;
+import io.socket.client.Manager;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import io.socket.engineio.client.Transport;
+
 import java.util.*;
 
 public class SocketIOService extends Service {
@@ -118,9 +122,25 @@ public class SocketIOService extends Service {
             options.timeout = 20000;
             options.reconnectionAttempts = 100;
             SharedPreferences pref_profile = PreferencesHelper.INSTANCE.getProfilePref(getApplicationContext());
-            String token = pref_profile.getString("token", "");
-            options.query = "token=" + token;
+            final String token = pref_profile.getString("token", "");
             mSocket = IO.socket(NetworkUtil.INSTANCE.getSocket(),options);
+
+            mSocket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    Transport transport = (Transport)args[0];
+
+                    transport.on(Transport.EVENT_REQUEST_HEADERS, new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            @SuppressWarnings("unchecked")
+                            Map<String, List<String>> headers = (Map<String, List<String>>)args[0];
+                            // modify request headers
+                            headers.put("token", Collections.singletonList(token));
+                        }
+                    });
+                }
+            });
         }
         catch (Exception e){
             Log.e("Error", "Exception in socket creation");
@@ -176,11 +196,12 @@ public class SocketIOService extends Service {
     }
 
     public void addNewMessageHandler(){
-        mSocket.off("received message");
-        mSocket.on("received message", new Emitter.Listener() {
+        mSocket.off(SocketEventConstants.getMessage);
+        mSocket.on(SocketEventConstants.getMessage, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-
+                System.out.println("Received message : "+args[0].toString());
+                Toast.makeText(SocketIOService.this, args[0].toString(), Toast.LENGTH_SHORT).show();
             }
         });
     }

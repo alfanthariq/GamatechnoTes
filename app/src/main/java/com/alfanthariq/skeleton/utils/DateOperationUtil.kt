@@ -1,10 +1,23 @@
 package com.alfanthariq.skeleton.utils
 
+import org.joda.time.format.DateTimeFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 object DateOperationUtil {
+
+    fun getDateFromString(dateStr: String): Date? {
+        val d: Date?
+        if (dateStr != "0000-00-00 00:00:00") {
+            val formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
+            val dt = formatter.parseDateTime(dateStr)
+            d = dt.toDate()
+        } else {
+            d = null
+        }
+        return d
+    }
 
     fun getCurrentTimeStr(formatStr : String) : String {
         val format = SimpleDateFormat(formatStr, Locale.US)

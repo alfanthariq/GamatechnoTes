@@ -13,5 +13,6 @@ object ContactContract {
         fun getData(page : Int, callback : (List<Users>?, Boolean, String) -> Unit)
         fun refreshData()
         fun search(keyword : String)
+        fun addConversation()
     }
 }

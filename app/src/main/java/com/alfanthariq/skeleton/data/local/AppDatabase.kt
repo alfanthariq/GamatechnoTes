@@ -9,7 +9,7 @@ import com.alfanthariq.skeleton.data.local.sqlitehelper.AssetSQLiteOpenHelperFac
 import com.alfanthariq.skeleton.data.model.*
 import java.io.File
 
-@Database(entities = [LogKegiatan::class, Users::class, Messages::class], version = 2)
+@Database(entities = [LogKegiatan::class, Users::class, Messages::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun UserDAO(): UsersDAO
@@ -17,7 +17,6 @@ abstract class AppDatabase : RoomDatabase() {
 
     companion object {
         private val databaseName = "data.db"
-        private val folderPath = Environment.getExternalStorageDirectory().toString() + "/esign/database/"
         var database: AppDatabase? = null
 
         fun getInstance(context: Context): AppDatabase? {
@@ -32,28 +31,10 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         fun buildDatabase(applicationContext: Context): AppDatabase? {
-            val isset = setFolderDatabase()
-            when (isset) {
-                true -> return Room.databaseBuilder(applicationContext, AppDatabase::class.java, databaseName)
-                        //.openHelperFactory(AssetSQLiteOpenHelperFactory())
-                        //.addMigrations(MIGRATION_1_2)
-                        .build()
-                else -> return null
-            }
-        }
-
-        private fun setFolderDatabase(): Boolean {
-            val folder = File(folderPath)
-            var success = true
-            if (!folder.exists()) {
-                success = folder.mkdirs()
-            }
-            if (success) {
-                println("Sukses buat folder database!")
-            } else {
-                println("Tidak bisa membuat folder !")
-            }
-            return success
+            return Room.databaseBuilder(applicationContext, AppDatabase::class.java, databaseName)
+                //.openHelperFactory(AssetSQLiteOpenHelperFactory())
+                //.addMigrations(MIGRATION_1_2)
+                .build()
         }
 
         /*private val MIGRATION_1_2 = object : Migration(1, 2) {

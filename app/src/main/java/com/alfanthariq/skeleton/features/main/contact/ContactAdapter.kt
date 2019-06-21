@@ -8,6 +8,7 @@ import com.alfanthariq.skeleton.R
 import com.alfanthariq.skeleton.data.local.AppDatabase
 import com.alfanthariq.skeleton.data.model.Users
 import com.alfanthariq.skeleton.utils.GlideApp
+import com.livinglifetechway.k4kotlin.onClick
 import kotlinx.android.synthetic.main.item_contact.view.*
 
 class ContactAdapter (private var detail: ArrayList<Users>,
@@ -37,6 +38,10 @@ class ContactAdapter (private var detail: ArrayList<Users>,
             view.txt_username.text = data.user_name
             view.txt_location.text = data.user_location
             view.txt_email.text = data.user_email
+
+            view.container.onClick {
+                listener(data)
+            }
 
             GlideApp.with(view.context)
                 .load(data.user_photo)

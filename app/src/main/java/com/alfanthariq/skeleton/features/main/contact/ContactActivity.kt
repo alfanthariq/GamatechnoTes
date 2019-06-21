@@ -8,10 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.alfanthariq.skeleton.R
 import com.alfanthariq.skeleton.data.model.Users
 import com.alfanthariq.skeleton.features.base.BaseActivity
-import com.alfanthariq.skeleton.utils.NetworkUtil
-import com.alfanthariq.skeleton.utils.TextWatcherHelper
-import com.alfanthariq.skeleton.utils.gone
-import com.alfanthariq.skeleton.utils.visible
+import com.alfanthariq.skeleton.features.main.chat.ChatActivity
+import com.alfanthariq.skeleton.utils.*
 import com.livinglifetechway.k4kotlin.toast
 import kotlinx.android.synthetic.main.activity_contact.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
@@ -91,7 +89,10 @@ class ContactActivity : BaseActivity<ContactContract.View,
 
     fun setupRecycler(){
         contactAdapter = ContactAdapter(details){
-
+            val param = HashMap<String, String>()
+            param["sender_id"] = it.user_id.toString()
+            param["sender_name"] = it.user_name
+            AppRoute.open(this, ChatActivity::class.java, param)
         }
 
         recycler.apply {
